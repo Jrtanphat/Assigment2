@@ -1,15 +1,11 @@
-# Hướng Dẫn Thiết Lập Môi Trường và Chạy Kịch Bản Selenium với Edge
-
-## Giới Thiệu
-
-Tệp hướng dẫn này mô tả cách thiết lập môi trường để chạy các kịch bản kiểm thử tự động hóa bằng **Selenium** và **Microsoft Edge**, sử dụng **pytest** làm framework kiểm thử. Bạn sẽ học cách cài đặt các công cụ cần thiết, cấu hình WebDriver cho trình duyệt Edge, và cách chạy các bài kiểm tra.
+# Hướng Dẫn Thiết Lập Môi Trường và Testing thông qua  Selenium với trình duyệt Chorme
 
 ## Yêu Cầu Hệ Thống
 
 Trước khi bắt đầu, đảm bảo rằng bạn có các công cụ sau:
 1. **Python 3.7+**: Bạn có thể tải Python tại [python.org](https://www.python.org/downloads/).
 2. **Microsoft Edge**: Phiên bản mới nhất của trình duyệt Edge.
-3. **Edge WebDriver**: WebDriver để điều khiển trình duyệt Edge, bạn có thể tải nó từ [trang WebDriver của Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/).
+3. **Chorme WebDriver**: WebDriver để điều khiển trình duyệt , bạn có thể tải nó từ [trang WebDriver của Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/).
 4. **pip**: Công cụ quản lý gói của Python (thường được cài sẵn với Python).
 
 ## Bước 1: Cài đặt Python và pip
@@ -39,14 +35,14 @@ pip install selenium pytest
 1. Truy cập [trang WebDriver của Edge](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/).
 2. Tải về phiên bản Edge WebDriver tương ứng với phiên bản trình duyệt Edge mà bạn đang sử dụng.
 
-### Cấu Hình Edge WebDriver
+### Cấu Hình Chorme WebDriver
 
 1. Sau khi tải về, giải nén tệp tải về.
 2. Lưu tệp giải nén vào một thư mục mà bạn có thể truy cập dễ dàng.
 
 ### Thêm Đường Dẫn vào Biến Môi Trường PATH
 
-Để cấu hình Edge WebDriver, bạn cần thêm đường dẫn đến thư mục chứa WebDriver vào biến môi trường PATH của hệ thống. 
+Để cấu hình Chorme WebDriver, bạn cần thêm đường dẫn đến thư mục chứa WebDriver vào biến môi trường PATH của hệ thống. 
 
 **Ví dụ trên Windows:**
 
@@ -85,6 +81,13 @@ Nếu xảy ra lỗi, pytest sẽ cung cấp thông tin chi tiết về vị tr�
 
 - Edge WebDriver không khớp với phiên bản Edge: Kiểm tra phiên bản trình duyệt Edge và đảm bảo rằng bạn đã tải đúng phiên bản Edge WebDriver tương ứng.
 - Lỗi không tìm thấy WebDriver: Đảm bảo rằng bạn đã thêm đường dẫn đến WebDriver vào biến môi trường PATH.
+# Cài đặt thư viện thông qua Pycharm 
+Nếu như bạn sử dụng pycharm đẻ thực hiện testing, bạn có thể download các thư viện đã có sẵn trên pycharm mà không cần cài đặt môi trường 
+## Các bước thực hiện 
+1.  Đi đến setting của Project bạn đã tạo
+2.  Tìm tên Project của bạn đã tạo 
+3.  Chọn mục **Python Interpreter** 
+4.  Chọn icon **"+"** và sau đó tìm kiếm selenium,pytest,webdriver,...etc
   
 ## Tài liệu tham khảo
 
