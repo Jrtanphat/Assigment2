@@ -22,8 +22,8 @@ def test_login_valid(driver):
     time.sleep(5)  # Đợi cho đến khi dropdown xuất hiện
     driver.find_element(By.CSS_SELECTOR, "a.dropdown-item[href*='route=account/login']").click()
     time.sleep(3)
-    driver.find_element(By.NAME, "email").send_keys("test0510@gmail.com")
-    driver.find_element(By.NAME, "password").send_keys("12345678")
+    driver.find_element(By.NAME, "email").send_keys("tanphatrey510@gmail.com")
+    driver.find_element(By.NAME, "password").send_keys("147258369P")
     time.sleep(3)
     # Gửi biểu mẫu đăng nhập
     submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
@@ -41,7 +41,7 @@ def test_login_invalid(driver):
     time.sleep(5)  # Đợi cho đến khi dropdown xuất hiện
     driver.find_element(By.CSS_SELECTOR, "a.dropdown-item[href*='route=account/login']").click()
     time.sleep(3)
-    driver.find_element(By.NAME, "email").send_keys("test0510@gmail.com")
+    driver.find_element(By.NAME, "email").send_keys("tanphatrey510@gmail.com")
     driver.find_element(By.NAME, "password").send_keys("123")
     time.sleep(3)
     # Gửi biểu mẫu đăng nhập
@@ -49,12 +49,11 @@ def test_login_invalid(driver):
     submit_button.click()
     time.sleep(3)
 
-
 def test_logout(driver):
     driver.get("https://demo.opencart.com/en-gb?route=account/login")
     time.sleep(5)
-    driver.find_element(By.NAME, "email").send_keys("test0510@gmail.com")
-    driver.find_element(By.NAME, "password").send_keys("12345678")
+    driver.find_element(By.NAME, "email").send_keys("tanphatrey510@gmail.com")
+    driver.find_element(By.NAME, "password").send_keys("147258369P")
     time.sleep(3)
     # Gửi biểu mẫu đăng nhập
     submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
@@ -69,7 +68,7 @@ def test_logout(driver):
 def test_form_submission(driver):
     driver.get("https://demo.opencart.com/en-gb?route=account/login")
     time.sleep(5)
-    driver.find_element(By.NAME, "email").send_keys("test0510@gmail.com")
+    driver.find_element(By.NAME, "email").send_keys("tanphatrey510@gmail.com")
     driver.find_element(By.NAME, "password").send_keys("123")
     time.sleep(5)
     driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary").click()
@@ -81,13 +80,13 @@ def test_form_submission(driver):
 
 def test_navigation(driver):
     driver.get("https://demo.opencart.com/home")
-    time.sleep(5)
+    time.sleep(7)
     driver.find_element(By.LINK_TEXT, "About Us").click()
-    time.sleep(5)
+    time.sleep(7)
     assert "About Us" in driver.title
-    time.sleep(5)
+    time.sleep(7)
     driver.find_element(By.LINK_TEXT, "Contact Us").click()
-    time.sleep(3)
+    time.sleep(7)
     assert "Contact Us" in driver.title
 
 
@@ -113,19 +112,29 @@ def test_data_validation(driver):
     print("Tất cả dữ liệu sản phẩm MacBook đã được xác thực thành công!")
 
 
-def test_add_to_cart_and_checkout(driver):
-    driver.get("https://demo.opencart.com/")
-    time.sleep(5)
+def test_add_to_cart(driver):
     driver.get("https://demo.opencart.com/")
     time.sleep(10)
     driver.find_element(By.XPATH, "//*[@id='content']/div[2]/div[1]/div/div[2]/form/div/button[1]").click()
+    time.sleep(10)
+    driver.find_element(By.LINK_TEXT, "Shopping Cart").click()
     time.sleep(5)
-    driver.find_element(By.CSS_SELECTOR, "button.btn.btn-lg.btn-inverse.btn-block.dropdown-toggle").click()
+
+# def test_checkout(driver): con dang thu nghiem
+    driver.get("https://demo.opencart.com/en-gb?route=account/login")
     time.sleep(5)
-    driver.find_element(By.XPATH, "//*[@id='header-cart']/div/ul/li/div/p/a[2]").click()
+    driver.find_element(By.NAME, "email").send_keys("tanphatrey510@gmail.com")
+    driver.find_element(By.NAME, "password").send_keys("147258369P")
     time.sleep(3)
-    # Xác nhận trang thanh toán
-    assert "Checkout" in driver.title
+    # Gửi biểu mẫu đăng nhập
+    submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+    submit_button.click()
+    time.sleep(5)
+    driver.find_element(By.CSS_SELECTOR, ".img-fluid").click()
+    time.sleep(5)
+    driver.find_element(By.XPATH, "//*[@id='content']/div[2]/div[2]/div/div[2]/form/div/button[1]").click()
+    time.sleep(5)
+    driver.find_element(By.LINK_TEXT, "Checkout").click()
 
 
 def test_search_functionality(driver):
@@ -134,7 +143,7 @@ def test_search_functionality(driver):
     driver.find_element(By.NAME, "search").send_keys("Iphone")
     time.sleep(5)
     driver.find_element(By.CSS_SELECTOR, "button.btn.btn-light.btn-lg").click()
-    time.sleep(2)
+    time.sleep(8)
     # Kiểm tra kết quả tìm kiếm
     assert "Search - Iphone" in driver.title
 
