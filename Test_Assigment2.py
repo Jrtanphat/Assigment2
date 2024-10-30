@@ -48,10 +48,6 @@ def test_login_invalid(driver):
     submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
     submit_button.click()
     time.sleep(3)
-    driver.find_element(By.XPATH, "//*[@id='top']/div/div[2]/ul/li[2]/div/a").click()
-    time.sleep(3)
-    # Quá trình đăng xuất
-    driver.find_element(By.CSS_SELECTOR, "a.dropdown-item[href*='route=account/logout']").click()
 
 
 def test_logout(driver):
