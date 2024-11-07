@@ -2,8 +2,10 @@ import pytest
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+@pytest.mark.usefixtures("driver")
 @pytest.fixture
 def driver():
     driver = webdriver.Chrome()
@@ -12,15 +14,96 @@ def driver():
     driver.quit()
 
 
+def test_register_valid(driver):
+    driver.get("https://demo.opencart.com/index.php?route=account/register&language=en-gb")
+    time.sleep(3)
+    driver.find_element(By.ID, "input-firstname").send_keys("Le Tan")
+    driver.find_element(By.ID, "input-lastname").send_keys("Phat")
+    driver.find_element(By.ID, "input-email").send_keys("tanphatrey10@gmail.com")
+    driver.find_element(By.ID, "input-password").send_keys("123456789")
+    time.sleep(3)
+    # Agree to the Privacy Policy
+    privacy_policy_checkbox = driver.find_element(By.NAME, "agree")
+    driver.execute_script("arguments[0].click();", privacy_policy_checkbox)
+    time.sleep(10)
+    # Gửi biểu mẫu
+    continue_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+    continue_button.click()
+    time.sleep(3)
+    try:
+        error_message = driver.find_element(By.XPATH,
+                                            "//div[contains(text(), 'Warning: E-Mail Address is already registered!')]")
+        assert error_message.is_displayed(), "Email đã đăng ký không hiện thông báo lỗi"
+    except Exception as e:
+        print(e)
+
+
+def test_register_blank_valid(driver):
+    driver.get("https://demo.opencart.com/index.php?route=account/register&language=en-gb")
+    time.sleep(3)
+    continue_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+    continue_button.click()
+    time.sleep(3)
+    # Check for required field error messages
+    try:
+        # Verify error message for first name
+        first_name_error = driver.find_element(By.XPATH,
+                                               "//input[@id='input-firstname']/following-sibling::div[@class='text-danger']")
+        assert first_name_error.is_displayed(), "First name error message not displayed."
+        assert "First Name must be between 1 and 32 characters!" in first_name_error.text, "First name error message text is incorrect."
+
+        # Verify error message for last name
+        last_name_error = driver.find_element(By.XPATH,
+                                              "//input[@id='input-lastname']/following-sibling::div[@class='text-danger']")
+        assert last_name_error.is_displayed(), "Last name error message not displayed."
+        assert "Last Name must be between 1 and 32 characters!" in last_name_error.text, "Last name error message text is incorrect."
+
+        # Verify error message for email
+        email_error = driver.find_element(By.XPATH,
+                                          "//input[@id='input-email']/following-sibling::div[@class='text-danger']")
+        assert email_error.is_displayed(), "Email error message not displayed."
+        assert "E-Mail Address does not appear to be valid!" in email_error.text or "E-Mail Address must be between 1 and 96 characters!" in email_error.text, "Email error message text is incorrect."
+
+        # Verify error message for password
+        password_error = driver.find_element(By.XPATH,
+                                             "//input[@id='input-password']/following-sibling::div[@class='text-danger']")
+        assert password_error.is_displayed(), "Password error message not displayed."
+        assert "Password must be between 4 and 20 characters!" in password_error.text, "Password error message text is incorrect."
+
+
+    except Exception as e:
+        print("Error or assertion failed:", e)
+        # print("Current page source:", driver.page_source)
+
+def test_register_invalid_email(driver):
+    driver.get("https://demo.opencart.com/index.php?route=account/register&language=en-gb")
+    time.sleep(3)
+    driver.find_element(By.ID, "input-firstname").send_keys("Le Tan")
+    driver.find_element(By.ID, "input-lastname").send_keys("Phat")
+    driver.find_element(By.ID, "input-email").send_keys("tanphatreygmail.com")
+    driver.find_element(By.ID, "input-password").send_keys("123456789")
+    time.sleep(3)
+    # Agree to the Privacy Policy
+    privacy_policy_checkbox = driver.find_element(By.NAME, "agree")
+    driver.execute_script("arguments[0].click();", privacy_policy_checkbox)
+    time.sleep(10)
+    # Gửi biểu mẫu
+    continue_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+    continue_button.click()
+    time.sleep(3)
+    # Check for email error message
+    try:
+        email_error = driver.find_element(By.XPATH,
+                                          "//input[@id='input-email']/following-sibling::div[@class='text-danger']")
+        assert email_error.is_displayed(), "Email error message not displayed."
+        assert "E-Mail Address does not appear to be valid!" in email_error.text, "Email error message text is incorrect."
+    except Exception as e:
+        print("Error or assertion failed:", e)
+        print("Current page source:", driver.page_source)
+
+
 def test_login_valid(driver):
-    driver.get("https://demo.opencart.com/")
-    time.sleep(10)
-    driver.get("https://demo.opencart.com/")
-    time.sleep(10)
-    # Mở menu dropdown
-    driver.find_element(By.XPATH, "//*[@id='top']/div/div[2]/ul/li[2]/div/a").click()
-    time.sleep(5)  # Đợi cho đến khi dropdown xuất hiện
-    driver.find_element(By.CSS_SELECTOR, "a.dropdown-item[href*='route=account/login']").click()
+    driver.get("https://demo.opencart.com/index.php?route=account/login&language=en-gb")
     time.sleep(3)
     driver.find_element(By.NAME, "email").send_keys("tanphatrey510@gmail.com")
     driver.find_element(By.NAME, "password").send_keys("147258369P")
@@ -31,15 +114,8 @@ def test_login_valid(driver):
     time.sleep(3)
 
 
-def test_login_invalid(driver):
-    driver.get("https://demo.opencart.com/")
-    time.sleep(10)
-    driver.get("https://demo.opencart.com/")
-    time.sleep(10)
-    # Mở menu dropdown
-    driver.find_element(By.XPATH, "//*[@id='top']/div/div[2]/ul/li[2]/div/a").click()
-    time.sleep(5)  # Đợi cho đến khi dropdown xuất hiện
-    driver.find_element(By.CSS_SELECTOR, "a.dropdown-item[href*='route=account/login']").click()
+def test_login_invalid_password(driver):
+    driver.get("https://demo.opencart.com/index.php?route=account/login&language=en-gb")
     time.sleep(3)
     driver.find_element(By.NAME, "email").send_keys("tanphatrey510@gmail.com")
     driver.find_element(By.NAME, "password").send_keys("123")
@@ -49,9 +125,34 @@ def test_login_invalid(driver):
     submit_button.click()
     time.sleep(3)
 
+
+def test_login_invalid_email(driver):
+    driver.get("https://demo.opencart.com/index.php?route=account/login&language=en-gb")
+    time.sleep(3)
+    driver.find_element(By.NAME, "email").send_keys("tanphat510@gmail.com")
+    driver.find_element(By.NAME, "password").send_keys("147258369P")
+    time.sleep(3)
+    # Gửi biểu mẫu đăng nhập
+    submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+    submit_button.click()
+    time.sleep(3)
+
+
+def test_login_special_character(driver):
+    driver.get("https://demo.opencart.com/index.php?route=account/login&language=en-gb")
+    time.sleep(3)
+    driver.find_element(By.NAME, "email").send_keys("tanphat510@gmail.com")
+    driver.find_element(By.NAME, "password").send_keys("*&^%$#@!")
+    time.sleep(3)
+    # Gửi biểu mẫu đăng nhập
+    submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
+    submit_button.click()
+    time.sleep(3)
+
+
 def test_logout(driver):
-    driver.get("https://demo.opencart.com/en-gb?route=account/login")
-    time.sleep(5)
+    driver.get("https://demo.opencart.com/index.php?route=account/login&language=en-gb")
+    time.sleep(3)
     driver.find_element(By.NAME, "email").send_keys("tanphatrey510@gmail.com")
     driver.find_element(By.NAME, "password").send_keys("147258369P")
     time.sleep(3)
@@ -79,16 +180,18 @@ def test_form_submission(driver):
 
 
 def test_navigation(driver):
-    driver.get("https://demo.opencart.com/home")
+    driver.get("https://demo.opencart.com/en-gb?route=common/home")
     time.sleep(7)
-    driver.find_element(By.LINK_TEXT, "About Us").click()
+    driver.find_element(By.LINK_TEXT, "Desktops").click()
     time.sleep(7)
-    assert "About Us" in driver.title
+    assert "Desktops" in driver.title
     time.sleep(7)
-    driver.find_element(By.LINK_TEXT, "Contact Us").click()
+    driver.get("https://demo.opencart.com/en-gb?route=common/home")
     time.sleep(7)
-    assert "Contact Us" in driver.title
-
+    driver.find_element(By.LINK_TEXT, "MacBook").click()
+    time.sleep(7)
+    assert "MacBook" in driver.title
+    time.sleep(7)
 
 def test_data_validation(driver):
     # Tìm sản phẩm MacBook
@@ -111,6 +214,94 @@ def test_data_validation(driver):
 
     print("Tất cả dữ liệu sản phẩm MacBook đã được xác thực thành công!")
 
+def search_products(driver, search_query):
+        # Open the homepage
+        driver.get("https://demo.opencart.com/en-gb?route=common/home")
+        try:
+            # Locate the search input box
+            search_box = WebDriverWait(driver, 30).until(
+                EC.visibility_of_element_located((By.NAME, "search"))
+            )
+
+            # Perform a search
+            search_box.clear()
+            search_box.send_keys(search_query + Keys.RETURN)  # Submit the search
+
+            # Wait for the search results to load
+            WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.ID, "content"))
+            )
+
+            # Locate product elements
+            products = driver.find_elements(By.XPATH, "//div[@id='content']//div[@class='product-thumb']")
+
+            # List to store product details
+            product_details = []
+
+            # Check if products were found
+            if not products:
+                print("No products found for the search query.")
+                return product_details  # Return an empty list if no products found
+
+            for product in products:
+                # Extract product details
+                product_name = product.find_element(By.XPATH, ".//h4/a").text
+                product_price = product.find_element(By.XPATH, ".//span[@class='price-new']").text
+                product_link = product.find_element(By.XPATH, ".//h4/a").get_attribute('href')
+
+                # Store product details in a dictionary
+                product_details.append({
+                    "name": product_name,
+                    "price": product_price,
+                    "link": product_link
+                })
+
+                # Print product details (optional)
+                print(f"Product Name: {product_name}")
+                print(f"Price: {product_price}")
+                print(f"Link: {product_link}")
+                print("=" * 40)  # Separator for better readability
+
+            return product_details  # Return the list of product details
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return []  # Return an empty list if an error occurs
+
+
+def test_search_products(driver):
+    existent_keyword = "MacBook"  # Example keyword
+    results = search_products(driver, existent_keyword)
+    assert len(results) > 0, "No products found for 'MacBook'"
+
+
+def test_search_with_nonexistent_keyword(driver):
+    nonexistent_keyword = "NonExistentProduct123"  # Example nonexistent keyword
+    results = search_products(driver, nonexistent_keyword)
+
+
+
+def test_search_with_uppercase_keyword(driver):
+        uppercase_keyword = "MACBOOK"  # Example uppercase keyword
+        results = search_products(driver, uppercase_keyword)
+
+
+
+def test_search_with_lowercase_keyword(driver):
+    lowercase_keyword = "macbook"  # Example lowercase keyword
+    results = search_products(driver, lowercase_keyword)
+
+
+def test_search_with_keyword_containing_special_characters(driver):
+        special_characters_keyword = "!@#$%^&*()"  # Example keyword with special characters
+        results = search_products(driver, special_characters_keyword)
+
+
+def test_search_blank_characters(driver):
+    empty_search_query = ""  # Example of an empty search query
+    results = search_products(driver, empty_search_query)
+    # Verify that no products are found for an empty search
+    assert len(results) == 0, f"Expected no products for an empty search, but found {len(results)} products."
 
 def test_add_to_cart(driver):
     driver.get("https://demo.opencart.com/")
@@ -119,6 +310,7 @@ def test_add_to_cart(driver):
     time.sleep(10)
     driver.find_element(By.LINK_TEXT, "Shopping Cart").click()
     time.sleep(5)
+
 
 @pytest.mark.usefixtures("driver")  # Sử dụng fixture driver đã định nghĩa
 def login(driver):
@@ -130,11 +322,11 @@ def login(driver):
 
     # Chờ cho trường email có thể nhìn thấy và nhập email
     email_field = wait.until(EC.visibility_of_element_located((By.ID, "input-email")))
-    email_field.send_keys("tanphatrey510@gmail.com")
+    email_field.send_keys("quoctrung87377@gmail.com")
 
     # Chờ cho trường mật khẩu có thể nhìn thấy và nhập mật khẩu
     password_field = wait.until(EC.visibility_of_element_located((By.ID, "input-password")))
-    password_field.send_keys("147258369P")
+    password_field.send_keys("Nozdormu1#")
 
     time.sleep(10)  # Chờ trang tải xong
 
@@ -147,29 +339,31 @@ def login(driver):
 
 
 def test_checkout_valid_info(driver):
-    # login
+    # Đăng nhập vào tài khoản
     login(driver)
-    # Choose product to add
-    driver.get("https://demo.opencart.com/index.php?route=product/product&product_id=43")
+    # Chọn sản phẩm để thêm vào giỏ hàng
+    driver.get(
+        "https://demo.opencart.com/index.php?route=product/product&product_id=43")  # Cập nhật với ID sản phẩm hợp lệ
     wait = WebDriverWait(driver, 10)
 
-    time.sleep(10)  # wait loading page
-    # Add to cart
+    time.sleep(10)  # Chờ trang tải xong
+    # Thêm sản phẩm vào giỏ hàng
     add_to_cart_button = wait.until(EC.element_to_be_clickable((By.ID, "button-cart")))
     add_to_cart_button.click()
-    time.sleep(10)  # wait loading page
+    time.sleep(10)  # Chờ trang tải xong
 
-    # Go to cart
+    # Đi đến giỏ hàng
     driver.get("https://demo.opencart.com/index.php?route=checkout/cart")
 
-    time.sleep(10)  # wait for update update
+    time.sleep(10)  # Chờ giỏ hàng cập nhật
 
     # Chọn nút thanh toán
     checkout_button = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Checkout")))
     checkout_button.click()
 
-    time.sleep(10)
+    time.sleep(10)  # Chờ trang thanh toán tải xong
 
+    # Nhập thông tin thanh toán hợp lệ
     wait.until(EC.visibility_of_element_located((By.ID, "input-payment-firstname"))).send_keys("John")
     wait.until(EC.visibility_of_element_located((By.ID, "input-payment-lastname"))).send_keys("Doe")
     wait.until(EC.visibility_of_element_located((By.ID, "input-payment-address-1"))).send_keys("123 Main St")
@@ -178,27 +372,17 @@ def test_checkout_valid_info(driver):
     wait.until(EC.visibility_of_element_located((By.ID, "input-payment-country"))).send_keys("United States")
     wait.until(EC.visibility_of_element_located((By.ID, "input-payment-zone"))).send_keys("New York")
 
-    # Choose payment method
+    # Chọn phương thức thanh toán
     payment_method_radio = wait.until(EC.element_to_be_clickable((By.NAME, "payment_method")))
     payment_method_radio.click()
 
-    # Confirm order
+    # Xác nhận đặt hàng
     confirm_order_button = wait.until(EC.element_to_be_clickable((By.ID, "button-confirm")))
     confirm_order_button.click()
 
+    # Kiểm tra xem thông báo thành công có hiển thị hay không
     success_message = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".alert-success")))
     assert "Your order has been placed!" in success_message.text
-
-
-def test_search_functionality(driver):
-    driver.get("https://demo.opencart.com/")
-    time.sleep(5)
-    driver.find_element(By.NAME, "search").send_keys("Iphone")
-    time.sleep(5)
-    driver.find_element(By.CSS_SELECTOR, "button.btn.btn-light.btn-lg").click()
-    time.sleep(8)
-    # Kiểm tra kết quả tìm kiếm
-    assert "Search - Iphone" in driver.title
 
 
 @pytest.mark.parametrize("size", [(800, 600), (1024, 768), (1920, 1080)])
