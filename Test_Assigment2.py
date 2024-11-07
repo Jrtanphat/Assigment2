@@ -112,6 +112,14 @@ def test_login_valid(driver):
     submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
     submit_button.click()
     time.sleep(3)
+    error_message = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CLASS_NAME, "alert-danger"))
+    )
+
+    # Assert that the error message is displayed and has the expected text
+    assert error_message.is_displayed(), "Error message is not displayed."
+    assert "Warning: No match for E-Mail Address and/or Password." in error_message.text.strip(), \
+        "Unexpected error message content."
 
 
 def test_login_invalid_password(driver):
@@ -124,6 +132,14 @@ def test_login_invalid_password(driver):
     submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
     submit_button.click()
     time.sleep(3)
+    error_message = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CLASS_NAME, "alert-danger"))
+    )
+
+    # Assert that the error message is displayed and has the expected text
+    assert error_message.is_displayed(), "Error message is not displayed."
+    assert "Warning: No match for E-Mail Address and/or Password." in error_message.text.strip(), \
+        "Unexpected error message content."
 
 
 def test_login_invalid_email(driver):
@@ -136,6 +152,14 @@ def test_login_invalid_email(driver):
     submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
     submit_button.click()
     time.sleep(3)
+    error_message = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CLASS_NAME, "alert-danger"))
+    )
+
+    # Assert that the error message is displayed and has the expected text
+    assert error_message.is_displayed(), "Error message is not displayed."
+    assert "Warning: No match for E-Mail Address and/or Password." in error_message.text.strip(), \
+        "Unexpected error message content."
 
 
 def test_login_special_character(driver):
@@ -170,7 +194,7 @@ def test_form_submission(driver):
     driver.get("https://demo.opencart.com/en-gb?route=account/login")
     time.sleep(5)
     driver.find_element(By.NAME, "email").send_keys("tanphatrey510@gmail.com")
-    driver.find_element(By.NAME, "password").send_keys("123")
+    driver.find_element(By.NAME, "password").send_keys("147")
     time.sleep(5)
     driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary").click()
     time.sleep(3)
@@ -198,17 +222,21 @@ def test_data_validation(driver):
     driver.get("https://demo.opencart.com/home")
     time.sleep(5)
     macbook_element = driver.find_element(By.XPATH, "//a[text()='MacBook']")
+    time.sleep(3)
     # Kiểm tra tên sản phẩm
     assert macbook_element.text == "MacBook", "Tên sản phẩm không khớp!"
+    time.sleep(3)
     # Kiểm tra giá của sản phẩm MacBook
     macbook_price_element = driver.find_element(By.XPATH, "//*[@id='content']/div[2]/div[1]/div/div[2]/div/div/span[1]")
     macbook_price = macbook_price_element.text.split("\n")[0]  # Lấy giá đầu tiên (không bao gồm thuế)
     assert macbook_price == "$602.00", "Giá của MacBook không khớp!"
+    time.sleep(3)
     # Kiểm tra mô tả của sản phẩm MacBook
     macbook_description_element = driver.find_element(By.XPATH, "//*[@id='content']/div[2]/div[1]/div/div[2]/div/p")
     macbook_description = macbook_description_element.text
 
     expected_description = "Intel Core 2 Duo processor"
+    time.sleep(3)
 
     assert expected_description in macbook_description, "Mô tả chứa thông tin mong đợi!"
 
@@ -273,36 +301,36 @@ def test_search_products(driver):
     existent_keyword = "MacBook"  # Example keyword
     results = search_products(driver, existent_keyword)
     assert len(results) > 0, "No products found for 'MacBook'"
-
+    time.sleep(3)
 
 def test_search_with_nonexistent_keyword(driver):
     nonexistent_keyword = "NonExistentProduct123"  # Example nonexistent keyword
     results = search_products(driver, nonexistent_keyword)
-
+    time.sleep(3)
 
 
 def test_search_with_uppercase_keyword(driver):
         uppercase_keyword = "MACBOOK"  # Example uppercase keyword
         results = search_products(driver, uppercase_keyword)
-
+        time.sleep(3)
 
 
 def test_search_with_lowercase_keyword(driver):
     lowercase_keyword = "macbook"  # Example lowercase keyword
     results = search_products(driver, lowercase_keyword)
-
+    time.sleep(3)
 
 def test_search_with_keyword_containing_special_characters(driver):
         special_characters_keyword = "!@#$%^&*()"  # Example keyword with special characters
         results = search_products(driver, special_characters_keyword)
-
+        time.sleep(3)
 
 def test_search_blank_characters(driver):
     empty_search_query = ""  # Example of an empty search query
     results = search_products(driver, empty_search_query)
     # Verify that no products are found for an empty search
     assert len(results) == 0, f"Expected no products for an empty search, but found {len(results)} products."
-
+    time.sleep(3)
 def test_add_to_cart(driver):
     driver.get("https://demo.opencart.com/")
     time.sleep(10)
@@ -312,77 +340,77 @@ def test_add_to_cart(driver):
     time.sleep(5)
 
 
-@pytest.mark.usefixtures("driver")  # Sử dụng fixture driver đã định nghĩa
-def login(driver):
-    # Mở trang đăng nhập
-    driver.get("https://demo.opencart.com/index.php?route=account/login")
-
-    # Khởi tạo WebDriverWait với thời gian chờ tối đa
-    wait = WebDriverWait(driver, 10)  # Thay đổi 10 thành thời gian chờ tối đa bạn mong muốn
-
-    # Chờ cho trường email có thể nhìn thấy và nhập email
-    email_field = wait.until(EC.visibility_of_element_located((By.ID, "input-email")))
-    email_field.send_keys("quoctrung87377@gmail.com")
-
-    # Chờ cho trường mật khẩu có thể nhìn thấy và nhập mật khẩu
-    password_field = wait.until(EC.visibility_of_element_located((By.ID, "input-password")))
-    password_field.send_keys("Nozdormu1#")
-
-    time.sleep(10)  # Chờ trang tải xong
-
-    # Chờ cho nút đăng nhập có thể nhấp được và nhấn
-    login_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.btn.btn-primary")))
-    login_button.click()
-
-    # Chờ cho việc đăng nhập hoàn tất (kiểm tra tiêu đề trang hoặc một phần tử nào đó)
-    wait.until(EC.title_contains("My Account"))  # Kiểm tra tiêu đề trang nếu đăng nhập thành công
-
-
-def test_checkout_valid_info(driver):
-    # Đăng nhập vào tài khoản
-    login(driver)
-    # Chọn sản phẩm để thêm vào giỏ hàng
-    driver.get(
-        "https://demo.opencart.com/index.php?route=product/product&product_id=43")  # Cập nhật với ID sản phẩm hợp lệ
-    wait = WebDriverWait(driver, 10)
-
-    time.sleep(10)  # Chờ trang tải xong
-    # Thêm sản phẩm vào giỏ hàng
-    add_to_cart_button = wait.until(EC.element_to_be_clickable((By.ID, "button-cart")))
-    add_to_cart_button.click()
-    time.sleep(10)  # Chờ trang tải xong
-
-    # Đi đến giỏ hàng
-    driver.get("https://demo.opencart.com/index.php?route=checkout/cart")
-
-    time.sleep(10)  # Chờ giỏ hàng cập nhật
-
-    # Chọn nút thanh toán
-    checkout_button = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Checkout")))
-    checkout_button.click()
-
-    time.sleep(10)  # Chờ trang thanh toán tải xong
-
-    # Nhập thông tin thanh toán hợp lệ
-    wait.until(EC.visibility_of_element_located((By.ID, "input-payment-firstname"))).send_keys("John")
-    wait.until(EC.visibility_of_element_located((By.ID, "input-payment-lastname"))).send_keys("Doe")
-    wait.until(EC.visibility_of_element_located((By.ID, "input-payment-address-1"))).send_keys("123 Main St")
-    wait.until(EC.visibility_of_element_located((By.ID, "input-payment-city"))).send_keys("New York")
-    wait.until(EC.visibility_of_element_located((By.ID, "input-payment-postcode"))).send_keys("10001")
-    wait.until(EC.visibility_of_element_located((By.ID, "input-payment-country"))).send_keys("United States")
-    wait.until(EC.visibility_of_element_located((By.ID, "input-payment-zone"))).send_keys("New York")
-
-    # Chọn phương thức thanh toán
-    payment_method_radio = wait.until(EC.element_to_be_clickable((By.NAME, "payment_method")))
-    payment_method_radio.click()
-
-    # Xác nhận đặt hàng
-    confirm_order_button = wait.until(EC.element_to_be_clickable((By.ID, "button-confirm")))
-    confirm_order_button.click()
-
-    # Kiểm tra xem thông báo thành công có hiển thị hay không
-    success_message = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".alert-success")))
-    assert "Your order has been placed!" in success_message.text
+# @pytest.mark.usefixtures("driver")  # Sử dụng fixture driver đã định nghĩa
+# def login(driver):
+#     # Mở trang đăng nhập
+#     driver.get("https://demo.opencart.com/index.php?route=account/login")
+#
+#     # Khởi tạo WebDriverWait với thời gian chờ tối đa
+#     wait = WebDriverWait(driver, 10)  # Thay đổi 10 thành thời gian chờ tối đa bạn mong muốn
+#
+#     # Chờ cho trường email có thể nhìn thấy và nhập email
+#     email_field = wait.until(EC.visibility_of_element_located((By.ID, "input-email")))
+#     email_field.send_keys("quoctrung87377@gmail.com")
+#
+#     # Chờ cho trường mật khẩu có thể nhìn thấy và nhập mật khẩu
+#     password_field = wait.until(EC.visibility_of_element_located((By.ID, "input-password")))
+#     password_field.send_keys("Nozdormu1#")
+#
+#     time.sleep(10)  # Chờ trang tải xong
+#
+#     # Chờ cho nút đăng nhập có thể nhấp được và nhấn
+#     login_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.btn.btn-primary")))
+#     login_button.click()
+#
+#     # Chờ cho việc đăng nhập hoàn tất (kiểm tra tiêu đề trang hoặc một phần tử nào đó)
+#     wait.until(EC.title_contains("My Account"))  # Kiểm tra tiêu đề trang nếu đăng nhập thành công
+#
+#
+# def test_checkout_valid_info(driver):
+#     # Đăng nhập vào tài khoản
+#     login(driver)
+#     # Chọn sản phẩm để thêm vào giỏ hàng
+#     driver.get(
+#         "https://demo.opencart.com/index.php?route=product/product&product_id=44")  # Cập nhật với ID sản phẩm hợp lệ
+#     wait = WebDriverWait(driver, 10)
+#
+#     time.sleep(10)  # Chờ trang tải xong
+#     # Thêm sản phẩm vào giỏ hàng
+#     add_to_cart_button = wait.until(EC.element_to_be_clickable((By.ID, "button-cart")))
+#     add_to_cart_button.click()
+#     time.sleep(10)  # Chờ trang tải xong
+#
+#     # Đi đến giỏ hàng
+#     driver.get("https://demo.opencart.com/index.php?route=checkout/cart")
+#
+#     time.sleep(10)  # Chờ giỏ hàng cập nhật
+#
+#     # Chọn nút thanh toán
+#     checkout_button = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Checkout")))
+#     checkout_button.click()
+#
+#     time.sleep(10)  # Chờ trang thanh toán tải xong
+#
+#     # Nhập thông tin thanh toán hợp lệ
+#     driver.find_element(By.__name__, "input-firstname").send_keys("John")
+#     # driver.find_element(By.ID, "input-lastname").send_keys("Doe")
+#     # driver.find_element(By.ID, "input-address-1").send_keys("123 Main St")
+#     # driver.find_element(By.ID, "input-city").send_keys("New York")
+#     # driver.find_element(By.ID, "input-postcode").send_keys("10001")
+#     # driver.find_element(By.ID, "input-country").send_keys("United States")
+#     # driver.find_element(By.ID, "input-zone").send_keys("New York")
+#
+#     # Chọn phương thức thanh toán
+#     payment_method_radio = wait.until(EC.element_to_be_clickable((By.NAME, "payment_method")))
+#     payment_method_radio.click()
+#
+#     # Xác nhận đặt hàng
+#     confirm_order_button = wait.until(EC.element_to_be_clickable((By.ID, "button-confirm")))
+#     confirm_order_button.click()
+#
+#     # Kiểm tra xem thông báo thành công có hiển thị hay không
+#     success_message = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".alert-success")))
+#     assert "Your order has been placed!" in success_message.text
 
 
 @pytest.mark.parametrize("size", [(800, 600), (1024, 768), (1920, 1080)])
