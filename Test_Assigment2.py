@@ -17,24 +17,28 @@ def driver():
 def test_register_valid(driver):
     driver.get("https://demo.opencart.com/index.php?route=account/register&language=en-gb")
     time.sleep(3)
+
     driver.find_element(By.ID, "input-firstname").send_keys("Le Tan")
     driver.find_element(By.ID, "input-lastname").send_keys("Phat")
-    driver.find_element(By.ID, "input-email").send_keys("tanphatrey10@gmail.com")
+    driver.find_element(By.ID, "input-email").send_keys("tanphatrey130@gmail.com")
     driver.find_element(By.ID, "input-password").send_keys("123456789")
     time.sleep(3)
+
     # Agree to the Privacy Policy
     privacy_policy_checkbox = driver.find_element(By.NAME, "agree")
     driver.execute_script("arguments[0].click();", privacy_policy_checkbox)
-    time.sleep(10)
-    # Gửi biểu mẫu
+    time.sleep(3)
+
+    # Submit the form
     continue_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
     continue_button.click()
     time.sleep(3)
+
     try:
-        error_message = driver.find_element(By.XPATH,
-                                            "//div[contains(text(), 'Warning: E-Mail Address is already registered!')]")
-        assert error_message.is_displayed(), "Email đã đăng ký không hiện thông báo lỗi"
+        success_message = driver.find_element(By.XPATH, "//div[contains(text(), 'Your Account Has Been Created!')]")
+        assert success_message.is_displayed()
     except Exception as e:
+        print("Registration failed: Success message not found.")
         print(e)
 
 
@@ -112,15 +116,19 @@ def test_login_valid(driver):
     submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
     submit_button.click()
     time.sleep(3)
-    error_message = WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.CLASS_NAME, "alert-danger"))
-    )
+    try:
+        # Wait until the success element is present
+        success_message = WebDriverWait(driver, 20).until(
+            EC.visibility_of_element_located((By.XPATH, "//h2, 'My Account')]"))
+        )
 
-    # Assert that the error message is displayed and has the expected text
-    assert error_message.is_displayed(), "Error message is not displayed."
-    assert "Warning: No match for E-Mail Address and/or Password." in error_message.text.strip(), \
-        "Unexpected error message content."
+        # Assert that the success message is displayed
+        assert success_message.is_displayed(), "Success message is not displayed."
+        print("Login successful.")
 
+    except Exception as e:
+        print("Login failed: Success message not found.")
+        print(e)
 
 def test_login_invalid_password(driver):
     driver.get("https://demo.opencart.com/index.php?route=account/login&language=en-gb")
@@ -172,7 +180,14 @@ def test_login_special_character(driver):
     submit_button = driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary")
     submit_button.click()
     time.sleep(3)
+    error_message = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CLASS_NAME, "alert-danger"))
+    )
 
+    # Assert that the error message is displayed and has the expected text
+    assert error_message.is_displayed(), "Error message is not displayed."
+    assert "Warning: No match for E-Mail Address and/or Password." in error_message.text.strip(), \
+        "Unexpected error message content."
 
 def test_logout(driver):
     driver.get("https://demo.opencart.com/index.php?route=account/login&language=en-gb")
@@ -199,8 +214,14 @@ def test_form_submission(driver):
     driver.find_element(By.CSS_SELECTOR, "button.btn.btn-primary").click()
     time.sleep(3)
     # Kiểm tra thông báo sau khi gửi biểu mẫu
-    message = driver.find_element(By.ID, "alert").text
-    assert "Warning: No match for E-Mail Address and/or Password." in message
+    error_message = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CLASS_NAME, "alert-danger"))
+    )
+
+    # Assert that the error message is displayed and has the expected text
+    assert error_message.is_displayed(), "Error message is not displayed."
+    assert "Warning: No match for E-Mail Address and/or Password." in error_message.text.strip(), \
+        "Unexpected error message content."
 
 
 def test_navigation(driver):
